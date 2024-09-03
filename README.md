@@ -46,4 +46,4 @@ Seed the Database
 php artisan db:seed
 Run the Application
 php artisan serve
-Interact with the API and test the various endpoints via Postman collection Get the collection from here: 
+Interact with the API and test the various endpoints via Postman collection Get the collection from here:https://documenter.getpostman.com/view/37831879/2sAXjNYAxJ 
