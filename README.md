@@ -10,40 +10,52 @@ API Response Service: Unified responses for API endpoints.
 
 Resources: API responses are formatted using Laravel resources for a consistent structure.
 
+### Technologies Used:
+- **Laravel 10**
+- **PHP**
+- **MySQL**
+- **XAMPP** (for local development environment)
+- **Composer** (PHP dependency manager)
+- **Postman Collection**: Contains all API requests for easy testing and interaction with the API.
 
 
-Technologies Used:
-Laravel 10
-PHP
-MySQL
-XAMPP (for local development environment)
-Composer (PHP dependency manager)
-Postman Collection: Contains all API requests for easy testing and interaction with the API.
-Installation
-Prerequisites
+## Installation
+
+### Prerequisites
+
 Ensure you have the following installed on your machine:
+- **XAMPP**: For running MySQL and Apache servers locally.
+- **Composer**: For PHP dependency management.
+- **PHP**: Required for running Laravel.
+- **MySQL**: Database for the project
+- **Postman**: Required for testing the requestes.
 
-XAMPP: For running MySQL and Apache servers locally.
-Composer: For PHP dependency management.
-PHP: Required for running Laravel.
-MySQL: Database for the project
-Postman: Required for testing the requestes.
-Steps to Run the Project
-Clone the Repository
-git clone https:[//github.com/TukaHeba/Movie_Library.git](https://github.com/KhatoonBadrea/books-liblary)
-Navigate to the Project Directory
-cd book-library
-Install Dependencies
-composer install
-Create Environment File
-cp .env.example .env
-Update the .env file with your database configuration (MySQL credentials, database name, etc.).
-Generate Application Key
-php artisan key:generate
-Run Migrations
-php artisan migrate
-Seed the Database
-php artisan db:seed
-Run the Application
-php artisan serve
-Interact with the API and test the various endpoints via Postman collection Get the collection from here:https://documenter.getpostman.com/view/37831879/2sAXjNYAxJ 
+### Steps to Run the Project
+
+1. Clone the Repository  
+   ```bash
+   git clone https://github.com/KhatoonBadrea/books-liblary
+2. Navigate to the Project Directory
+   ```bash
+   cd books-library
+3. Install Dependencies
+   ```bash
+   composer install
+4. Create Environment File
+   ```bash
+   cp .env.example .env
+   Update the .env file with your database configuration (MySQL credentials, database name, etc.).
+5. Generate Application Key
+    ```bash
+    php artisan key:generate
+6. Run Migrations
+    ```bash
+    php artisan migrate
+7. Seed the Database
+    ```bash
+    php artisan db:seed
+8. Run the Application
+    ```bash
+    php artisan serve
+9. Interact with the API and test the various endpoints via Postman collection 
+    Get the collection from here:https://documenter.getpostman.com/view/37831879/2sAXjNYAxJ
