@@ -30,7 +30,7 @@ MySQL: Database for the project
 Postman: Required for testing the requestes.
 Steps to Run the Project
 Clone the Repository
-git clone https://github.com/TukaHeba/Movie_Library.git
+git clone https:[//github.com/TukaHeba/Movie_Library.git](https://github.com/KhatoonBadrea/books-liblary)
 Navigate to the Project Directory
 cd book-library
 Install Dependencies
