@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Services\BookService;
@@ -15,7 +16,7 @@ use App\Http\Requests\UpdateBookRequest;
 class BookController extends Controller
 {
     use ApiResponseTrait;
-    
+
     protected $bookService;
 
     /**
@@ -30,11 +31,18 @@ class BookController extends Controller
      * Display a listing of the resource.  
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = $this->bookService->getAllBooks();
-        return $this->successResponse('this is all book', $books, 200);
+        $filterBy = $request->input('filter_by'); 
+        $filterValue = $request->input('filter_value'); 
+        $isBorrow = $request->input('isBorrow'); // if isBorrow =0  =>not borrowed 
+                                                //if isBorrow=1  => borrowed
+    
+        $books = $this->bookService->getAllBooks($filterBy, $filterValue, $isBorrow);
+    
+        return $this->successResponse('This is all books', $books, 200);
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -54,8 +62,9 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        //
+       //
     }
+
 
     /**
      * Update the specified resource in storage.

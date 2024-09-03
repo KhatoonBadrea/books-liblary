@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use Exception;
+use Carbon\Carbon;
 use App\Models\Book;
+use App\Models\Borrow_record;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\BookResource;
 use App\Http\Traits\ApiResponseTrait;
-
 
 class BookService
 {
@@ -16,25 +18,42 @@ class BookService
      * fetch the all book from DB
      * @return Book $book
      */
-    public function getAllBooks()
+    public function getAllBooks($filterBy = null, $filterValue = null, $isBorrowed = null)
     {
-        try {
+        //make a query for book
+        $query = Book::query();
 
-            $book = Book::all();
-
-            //check if the book is not empty
-            if ($book->isNotEmpty()) {
-
-                $book = BookResource::collection($book);
-
-                return $book;
-            } else
-                return $this->notFound('there are not any book here');
-        } catch (\Exception $e) {
-            Log::error('Error in BookController@store' . $e->getMessage());
-            return $this->errorResponse('An error occurred: ' . 'There is an error on the server', [], 500);
+        //filtering the book
+        if ($filterBy && $filterValue) {
+            $query->where($filterBy, $filterValue);
         }
+
+        if ($isBorrowed !== null) {
+            //check if the book borrowed
+            $borrowedBooksIds = Borrow_Record::whereNull('due_date')
+                ->orWhere('due_date', '=<', today())
+                ->pluck('book_id')
+                ->toArray();
+                //apply the condition :if the book borrowed or not
+            $query->where(function ($subQuery) use ($borrowedBooksIds, $isBorrowed) {
+                if (!$isBorrowed) {
+                    //featch the borrowed book just
+                    $subQuery->whereIn('id', $borrowedBooksIds);
+                } else {
+                    //featch the book not borrowed & not in the Borrow_Record
+                    $subQuery->whereNotIn('id', $borrowedBooksIds);
+                }
+            });
+        }
+
+        $books = $query->get();
+        return $books;
     }
+
+
+
+
+
 
     /**
      * create new book
@@ -118,6 +137,40 @@ class BookService
         } catch (\Exception $e) {
             Log::error('Error in BookController@deleteBook: ' . $e->getMessage());
             throw $e;
+        }
+    }
+    public function getBookDetails(Book $id)
+    {
+        try {
+            // dd($id->ratings());
+            // تحميل الكتاب مع التقييمات
+            // dd($id);
+
+            // $book->load('ratings.user');
+            dd(Borrow_record::with('ratings')->find($id));
+            // $book = Book::with('ratings')->find($id);
+
+            // $ratings = $book->ratings()->avg('ratings');
+            // dd($ratings);
+            // تحقق من حالة الاستعارة
+            // $isAvailable = !$book->borrow_records()->whereNull('returned_at')->exists();
+
+            // بناء البيانات المراد إرجاعها
+            // return [
+            //     'id' => $book->id,
+            //     'title' => $book->title,
+            //     'author' => $book->author,
+            //     'description' => $book->description,
+            //     'category' => $book->category,
+            //     'published_at' => $book->published_at,
+            //     // 'average_rating' => $book->ratings()->avg('rating') ?? 'لا يوجد تقييمات',
+            //     // 'is_available' => $isAvailable,
+            //     'ratings' => $book->ratings,
+            // ];
+            // dd($book);
+        } catch (Exception $e) {
+            Log::error('Error in BookService@getBookDetails: ' . $e->getMessage());
+            throw new Exception('An error occurred while retrieving book details.');
         }
     }
 }

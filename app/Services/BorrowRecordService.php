@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Events\BookReturned;
@@ -27,7 +28,7 @@ class BorrowRecordService
             } else {
                 return $this->notFound('There are no records here');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error in BorrowRecordController@getAllRecord: ' . $e->getMessage());
             return $this->errorResponse('An error occurred: ' . 'there is an error in the server', [], 500);
         }

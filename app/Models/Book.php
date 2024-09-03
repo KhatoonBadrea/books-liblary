@@ -16,8 +16,18 @@ class Book extends Model
         'publiched_at',
     ];
 
-    public function books()
+    public function ratings()
+    { 
+        $this->hasMany(Rating::class);
+    }
+
+
+    public function borrowRecords()
     {
-        $this->hasMany(Book::class);
+        return $this->hasMany(Borrow_record::class, 'book_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
