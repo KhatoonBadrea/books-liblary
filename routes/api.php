@@ -1,8 +1,13 @@
 <?php
 
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\BorrowRecordController;
+use App\Http\Controllers\Api\RatingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +20,7 @@ use App\Http\Controllers\Api\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 Route::group([
 
     'middleware' => 'api',
@@ -27,7 +30,15 @@ Route::group([
 
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
-    Route::post('logout', 'AuthController@logout');
-    Route::post('refresh', 'AuthController@refresh');
-    Route::post('me', 'AuthController@me');
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
 });
+Route::get('book', [BookController::class, 'index']); // Public route for index
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::apiResource('book', BookController::class)->except(['index']);
+    Route::apiResource('record', BorrowRecordController::class);
+    Route::post('return', [BorrowRecordController::class, 'returnBook']);
+    Route::apiResource('rating', RatingController::class);
+});
+
+Route::apiResource('user', UserController::class);

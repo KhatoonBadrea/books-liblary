@@ -26,7 +26,7 @@ Trait ApiResponseTrait{
         return response()->json([
             'success'  =>false,
             'message'  =>$message,
-            'code'     =>404
+            'code'     =>404 
         ]);
     }
     public function Unauthorized($message){

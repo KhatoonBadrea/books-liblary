@@ -2,79 +2,47 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-
+use App\Services\AuthService;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Controllers\Controller; 
 use App\Http\Traits\ApiResponseTrait;
-use Illuminate\Support\Facades\Validator;
-
 
 class AuthController extends Controller
 {
-    use  ApiResponseTrait;
+    use ApiResponseTrait;
 
-    public function __construct()
+    protected $authService;
+
+    public function __construct(AuthService $authService)
     {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->authService = $authService;
     }
 
-
-
-    //------------login
-
-
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        $result = $this->authService->login($request->validated());
+        if (isset($result['error'])) {
+            return response()->json($result, $result['status']);
         }
-        if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        return $this->createNewToken($token);
+        return response()->json($result);
     }
 
-
-    //-------register
-
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $user = User::create(array_merge(
-            $validator->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
-
-        return $this->registerResponse($user);
+        $user = $this->authService->register($request->validated());
+        return response()->json($user, 201);
     }
 
-    //-----logout
     public function logout()
     {
-        auth()->logout();
+        $this->authService->logout();
         return response()->json(['message' => 'User successfully signed out']);
     }
 
-
-    protected function createNewToken($token)
+    public function refresh()
     {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            // 'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
-        ]);
+        return response()->json($this->authService->refresh());
     }
 }
